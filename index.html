@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ZeroCode - Platform pembelajaran interaktif untuk belajar HTML, CSS, JavaScript dan Python dengan sistem gamifikasi">
+    <title>ZeroCode — Belajar Programming dari Nol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Streak Popup -->
+    <div id="streak-popup" class="streak-popup hidden">
+        <div class="streak-popup-content">
+            <div class="streak-fire">🔥</div>
+            <h2 id="streak-popup-title">Streak 3 Hari!</h2>
+            <p id="streak-popup-msg">Kamu konsisten banget! Terus semangat ya! 💪</p>
+            <button class="btn btn-primary" onclick="closeStreakPopup()">Lanjut Belajar!</button>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div id="achievement-popup" class="achievement-popup hidden">
+        <div class="achievement-popup-content">
+            <div class="achievement-icon" id="achievement-icon">🏆</div>
+            <h2 id="achievement-title">Achievement Unlocked!</h2>
+            <p id="achievement-desc">Kamu telah menyelesaikan modul pertama!</p>
+            <button class="btn btn-primary" onclick="closeAchievementPopup()">Mantap!</button>
+        </div>
+    </div>
+
+    <!-- XP Gain Toast -->
+    <div id="xp-toast" class="xp-toast hidden">
+        <span class="xp-toast-icon">⚡</span>
+        <span id="xp-toast-text">+25 XP</span>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="logo">
+                <span class="logo-icon">⟨/⟩</span>
+                <span class="logo-text" style="font-size:1.1rem;">ZeroCode</span>
+            </div>
+            <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" title="Toggle Theme">☀️</button>
+        </div>
+
+        <div class="sidebar-nav">
+            <button class="nav-item active" data-page="dashboard" id="nav-dashboard" onclick="navigateTo('dashboard')">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </button>
+            <button class="nav-item" data-page="html" id="nav-html" onclick="navigateTo('html')">
+                <span class="nav-icon">🧱</span>
+                <span class="nav-label">HTML</span>
+                <span class="nav-badge" id="html-progress-badge">0%</span>
+            </button>
+            <button class="nav-item" data-page="css" id="nav-css" onclick="navigateTo('css')">
+                <span class="nav-icon">🎨</span>
+                <span class="nav-label">CSS</span>
+                <span class="nav-badge" id="css-progress-badge">0%</span>
+            </button>
+            <button class="nav-item" data-page="javascript" id="nav-javascript" onclick="navigateTo('javascript')">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-label">JavaScript</span>
+                <span class="nav-badge" id="javascript-progress-badge">0%</span>
+            </button>
+            <button class="nav-item" data-page="python" id="nav-python" onclick="navigateTo('python')">
+                <span class="nav-icon">🐍</span>
+                <span class="nav-label">Python</span>
+                <span class="nav-badge" id="python-progress-badge">0%</span>
+            </button>
+            <button class="nav-item" data-page="achievements" id="nav-achievements" onclick="navigateTo('achievements')">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">Achievements</span>
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-level">
+                <div class="level-badge" id="level-badge">1</div>
+                <div class="level-info">
+                    <span class="level-label">Level <span id="level-num">1</span></span>
+                    <div class="level-bar">
+                        <div class="level-bar-fill" id="level-bar-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header" id="mobile-header">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="logo">
+            <span class="logo-icon">⟨/⟩</span>
+            <span class="logo-text">ZeroCode</span>
+        </div>
+        <div class="mobile-actions" style="display:flex; align-items:center; gap:12px;">
+            <button id="theme-toggle-mobile" class="theme-btn" onclick="toggleTheme()" title="Toggle Theme" style="width:32px; height:32px; font-size:1rem;">☀️</button>
+            <div class="mobile-streak">
+                <span>🔥</span>
+                <span id="mobile-streak-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+
+        <!-- ================================ -->
+        <!-- DASHBOARD PAGE -->
+        <!-- ================================ -->
+        <section class="page active" id="page-dashboard">
+            <!-- Welcome Banner -->
+            <div class="dash-welcome">
+                <div class="dash-welcome-left">
+                    <div class="dash-avatar" id="dash-avatar">N</div>
+                    <div class="dash-welcome-text">
+                        <h1 class="dash-greeting" id="greeting">Selamat Datang! 👋</h1>
+                        <p class="dash-subtitle">Ayo lanjutkan perjalanan coding kamu hari ini.</p>
+                    </div>
+                </div>
+                <div class="dash-welcome-right">
+                    <div class="dash-streak-box">
+                        <div class="dash-streak-flame" id="streak-flame">🔥</div>
+                        <div>
+                            <span class="dash-streak-num" id="streak-count">0</span>
+                            <span class="dash-streak-label">Hari Streak</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="dash-stats">
+                <div class="dash-stat">
+                    <div class="dash-stat-icon" style="background:rgba(124,92,252,.12)">⚡</div>
+                    <div class="dash-stat-info">
+                        <span class="dash-stat-val" id="total-xp">0</span>
+                        <span class="dash-stat-lbl">Total XP</span>
+                    </div>
+                </div>
+                <div class="dash-stat">
+                    <div class="dash-stat-icon" style="background:rgba(41,101,241,.12)">📚</div>
+                    <div class="dash-stat-info">
+                        <span class="dash-stat-val" id="completed-lessons">0</span>
+                        <span class="dash-stat-lbl">Pelajaran Selesai</span>
+                    </div>
+                </div>
+                <div class="dash-stat">
+                    <div class="dash-stat-icon" style="background:rgba(52,211,153,.12)">✅</div>
+                    <div class="dash-stat-info">
+                        <span class="dash-stat-val" id="correct-answers">0</span>
+                        <span class="dash-stat-lbl">Jawaban Benar</span>
+                    </div>
+                </div>
+                <div class="dash-stat">
+                    <div class="dash-stat-icon" style="background:rgba(251,191,36,.12)">🏆</div>
+                    <div class="dash-stat-info">
+                        <span class="dash-stat-val" id="total-achievements">0</span>
+                        <span class="dash-stat-lbl">Achievements</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Progress -->
+            <h2 class="section-title">📂 Kursus Tersedia</h2>
+            <div class="dash-courses">
+                <div class="dash-course-card" onclick="navigateTo('html')">
+                    <div class="dcc-accent" style="background:var(--accent-html)"></div>
+                    <div class="dcc-body">
+                        <div class="dcc-top">
+                            <span class="dcc-emoji">🧱</span>
+                            <span class="dcc-badge" id="html-progress-badge2">0%</span>
+                        </div>
+                        <h3 class="dcc-name">HTML</h3>
+                        <p class="dcc-desc">Struktur & elemen dasar web</p>
+                        <div class="dcc-bar"><div class="dcc-bar-fill" id="html-progress-fill" style="width:0%;background:var(--accent-html)"></div></div>
+                    </div>
+                </div>
+                <div class="dash-course-card" onclick="navigateTo('css')">
+                    <div class="dcc-accent" style="background:var(--accent-css)"></div>
+                    <div class="dcc-body">
+                        <div class="dcc-top">
+                            <span class="dcc-emoji">🎨</span>
+                            <span class="dcc-badge" id="css-progress-badge2">0%</span>
+                        </div>
+                        <h3 class="dcc-name">CSS</h3>
+                        <p class="dcc-desc">Desain & styling halaman web</p>
+                        <div class="dcc-bar"><div class="dcc-bar-fill" id="css-progress-fill" style="width:0%;background:var(--accent-css)"></div></div>
+                    </div>
+                </div>
+                <div class="dash-course-card" onclick="navigateTo('javascript')">
+                    <div class="dcc-accent" style="background:var(--accent-js)"></div>
+                    <div class="dcc-body">
+                        <div class="dcc-top">
+                            <span class="dcc-emoji">⚡</span>
+                            <span class="dcc-badge" id="js-progress-badge2">0%</span>
+                        </div>
+                        <h3 class="dcc-name">JavaScript</h3>
+                        <p class="dcc-desc">Interaktivitas & logika web</p>
+                        <div class="dcc-bar"><div class="dcc-bar-fill" id="js-progress-fill" style="width:0%;background:var(--accent-js)"></div></div>
+                    </div>
+                </div>
+                <div class="dash-course-card" onclick="navigateTo('python')">
+                    <div class="dcc-accent" style="background:#306998"></div>
+                    <div class="dcc-body">
+                        <div class="dcc-top">
+                            <span class="dcc-emoji">🐍</span>
+                            <span class="dcc-badge" id="python-progress-badge2">0%</span>
+                        </div>
+                        <h3 class="dcc-name">Python</h3>
+                        <p class="dcc-desc">Bahasa andalan data science</p>
+                        <div class="dcc-bar"><div class="dcc-bar-fill" id="python-progress-fill" style="width:0%;background:#306998"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Motivation -->
+            <div class="dash-motivation" id="motivation-card">
+                <div class="dash-motiv-icon">💡</div>
+                <div class="dash-motiv-body">
+                    <h3 id="motivation-title">Tips Hari Ini</h3>
+                    <p id="motivation-text">Konsistensi lebih penting dari intensitas. Belajar sedikit setiap hari lebih baik daripada marathon 1 hari lalu berhenti!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================ -->
+        <!-- BOSS BATTLE SECTION             -->
+        <!-- ================================ -->
+        <div id="boss-battle-overlay" class="boss-overlay hidden">
+            <div class="boss-card">
+                <div class="boss-header">
+                    <div class="boss-icon" id="boss-icon">🐉</div>
+                    <h2 class="boss-title" id="boss-title">⚔️ Boss Battle!</h2>
+                    <p class="boss-subtitle" id="boss-subtitle">Taklukkan boss ini untuk melanjutkan ke materi berikutnya!</p>
+                    <div class="boss-hp">
+                        <div class="boss-hp-label">Boss HP</div>
+                        <div class="boss-hp-bar">
+                            <div class="boss-hp-fill" id="boss-hp-fill" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="boss-question-area">
+                    <div class="boss-q-num" id="boss-q-num">1/5</div>
+                    <div class="boss-q-text" id="boss-q-text"></div>
+                    <div class="boss-options" id="boss-options"></div>
+                    <div class="boss-feedback hidden" id="boss-feedback"></div>
+                    <button class="btn btn-primary hidden" id="boss-next-btn" onclick="nextBossQuestion()">Lanjut →</button>
+                </div>
+                <div class="boss-result hidden" id="boss-result">
+                    <div class="boss-result-icon" id="boss-result-icon">🎉</div>
+                    <h2 id="boss-result-title">Boss Dikalahkan!</h2>
+                    <p id="boss-result-msg">Kamu berhasil melewati ujian ini!</p>
+                    <button class="btn btn-primary" onclick="closeBossBattle()">Lanjut Belajar 🚀</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================ -->
+        <!-- COURSE PAGE TEMPLATE (HTML) -->
+        <!-- ================================ -->
+        <section class="page" id="page-html">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">🧱 Belajar HTML</h1>
+                    <p class="page-subtitle">Kuasai pondasi setiap halaman web.</p>
+                </div>
+            </div>
+            <div class="lessons-container" id="html-lessons"></div>
+        </section>
+
+        <!-- ================================ -->
+        <!-- COURSE PAGE TEMPLATE (CSS) -->
+        <!-- ================================ -->
+        <section class="page" id="page-css">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">🎨 Belajar CSS</h1>
+                    <p class="page-subtitle">Buat tampilan web yang memukau.</p>
+                </div>
+            </div>
+            <div class="lessons-container" id="css-lessons"></div>
+        </section>
+
+        <!-- ================================ -->
+        <!-- COURSE PAGE TEMPLATE (JS) -->
+        <!-- ================================ -->
+        <section class="page" id="page-javascript">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">⚡ Belajar JavaScript</h1>
+                    <p class="page-subtitle">Hidupkan web kamu dengan interaktivitas.</p>
+                </div>
+            </div>
+            <div class="lessons-container" id="javascript-lessons"></div>
+        </section>
+
+        <!-- ================================ -->
+        <!-- COURSE PAGE TEMPLATE (PYTHON) -->
+        <!-- ================================ -->
+        <section class="page" id="page-python">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">🐍 Belajar Python</h1>
+                    <p class="page-subtitle">Bahasa andalan programer & data science.</p>
+                </div>
+            </div>
+            <div class="lessons-container" id="python-lessons"></div>
+        </section>
+
+        <!-- ================================ -->
+        <!-- LESSON VIEW (dynamic) -->
+        <!-- ================================ -->
+        <section class="page" id="page-lesson">
+            <div class="lesson-view">
+                <button class="btn-back" id="btn-back" onclick="goBackFromLesson()">← Kembali</button>
+                <div class="lesson-header">
+                    <h1 class="lesson-title" id="lesson-title"></h1>
+                    <div class="lesson-header-right">
+                        <span class="lesson-xp" id="lesson-xp">+25 XP</span>
+                        <div class="lesson-steps" id="lesson-steps">
+                            <span class="step-dot active" data-step="materi" title="Materi"></span>
+                            <span class="step-dot" data-step="practice" title="Praktek"></span>
+                            <span class="step-dot" data-step="quiz" title="Quiz"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB BAR -->
+                <div class="lesson-tabs">
+                    <button class="lesson-tab active" id="tab-materi" onclick="switchTab('materi')">
+                        <span>📖</span> Materi
+                    </button>
+                    <button class="lesson-tab" id="tab-practice" onclick="switchTab('practice')">
+                        <span>💻</span> Praktek
+                    </button>
+                    <button class="lesson-tab" id="tab-quiz" onclick="switchTab('quiz')">
+                        <span>🧠</span> Quiz
+                    </button>
+                </div>
+
+                <!-- TAB: MATERI -->
+                <div class="tab-panel active" id="panel-materi">
+                    <div class="lesson-content" id="lesson-content"></div>
+                    <div class="tab-nav-footer">
+                        <button class="btn btn-primary" onclick="switchTab('practice')">
+                            Lanjut ke Praktek 💻
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: PRAKTEK (Code Editor) -->
+                <div class="tab-panel" id="panel-practice">
+                    <div class="practice-header">
+                        <div class="challenge-badge">🎯 Challenge</div>
+                        <h3 class="challenge-title" id="challenge-title">Tulis kodemu di sini</h3>
+                        <p class="challenge-desc" id="challenge-desc">Ikuti instruksi di bawah ini.</p>
+                    </div>
+
+                    <div class="editor-container" id="editor-container">
+                        <!-- Editor Panel -->
+                        <div class="editor-panel">
+                            <div class="editor-toolbar">
+                                <div class="editor-toolbar-left">
+                                    <span class="editor-lang-badge" id="editor-lang-badge">HTML</span>
+                                    <span class="editor-filename" id="editor-filename">index.html</span>
+                                </div>
+                                <div class="editor-toolbar-right">
+                                    <button class="editor-btn" onclick="resetEditor()" title="Reset">↺ Reset</button>
+                                    <button class="editor-btn editor-btn-run" onclick="runCode()" id="run-btn">
+                                        ▶ Jalankan
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editor-wrapper">
+                                <div class="line-numbers" id="line-numbers">1</div>
+                                <textarea
+                                    id="code-editor"
+                                    class="code-editor"
+                                    spellcheck="false"
+                                    autocomplete="off"
+                                    autocorrect="off"
+                                    autocapitalize="off"
+                                    placeholder="Tulis kode di sini..."
+                                    oninput="onEditorInput()"
+                                    onkeydown="handleEditorKeydown(event)"
+                                    onscroll="syncScroll()"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Output Panel -->
+                        <div class="output-panel">
+                            <div class="output-toolbar">
+                                <span class="output-title" id="output-title">👁️ Output</span>
+                                <button class="editor-btn" onclick="clearOutput()">✕ Clear</button>
+                            </div>
+                            <!-- Live Preview for HTML/CSS -->
+                            <iframe id="preview-frame" class="preview-frame" sandbox="allow-scripts"></iframe>
+                            <!-- Console for JS -->
+                            <div id="console-output" class="console-output hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Challenge Check -->
+                    <div class="challenge-checker" id="challenge-checker">
+                        <div class="checker-hints" id="checker-hints"></div>
+                        <div class="checker-actions">
+                            <button class="btn btn-outline" onclick="showHint()" id="hint-btn">💡 Hint</button>
+                            <button class="btn btn-primary" onclick="checkChallenge()" id="check-btn">✅ Cek Jawaban</button>
+                        </div>
+                    </div>
+
+                    <div class="challenge-result hidden" id="challenge-result">
+                        <div class="result-icon" id="result-icon">✅</div>
+                        <div class="result-content">
+                            <h4 id="result-title">Benar!</h4>
+                            <p id="result-message">Kode kamu sudah benar!</p>
+                        </div>
+                        <button class="btn btn-primary" id="result-next-btn" onclick="switchTab('quiz')">
+                            Lanjut ke Quiz 🧠
+                        </button>
+                    </div>
+
+                    <div class="tab-nav-footer" id="practice-skip-footer">
+                        <button class="btn btn-outline btn-sm" onclick="skipPractice()">
+                            Lewati Praktek →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB: QUIZ -->
+                <div class="tab-panel" id="panel-quiz">
+                    <div class="quiz-section" id="quiz-section">
+                        <h2 class="quiz-title">🧠 Quiz Time!</h2>
+                        <div class="quiz-progress-bar">
+                            <div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+                        </div>
+                        <div class="quiz-question" id="quiz-question"></div>
+                        <div class="quiz-options" id="quiz-options"></div>
+                        <div class="quiz-feedback hidden" id="quiz-feedback"></div>
+                        <button class="btn btn-primary hidden" id="quiz-next-btn" onclick="nextQuizQuestion()">Lanjut →</button>
+                    </div>
+
+                    <!-- Lesson Complete -->
+                    <div class="lesson-complete hidden" id="lesson-complete">
+                        <div class="complete-animation">
+                            <span class="complete-icon">🎉</span>
+                            <h2>Lesson Selesai!</h2>
+                            <p id="complete-message">Kamu hebat! Lanjutkan ke pelajaran berikutnya.</p>
+                            <div class="complete-xp">
+                                <span>+</span><span id="earned-xp">25</span><span> XP</span>
+                            </div>
+                            <div class="complete-stats" id="complete-stats"></div>
+                            <button class="btn btn-primary" onclick="goBackFromLesson()">Kembali ke Kursus 🚀</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================ -->
+        <!-- ACHIEVEMENTS PAGE -->
+        <!-- ================================ -->
+        <section class="page" id="page-achievements">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">🏆 Achievements</h1>
+                    <p class="page-subtitle">Koleksi pencapaian kamu selama belajar.</p>
+                </div>
+            </div>
+            <div class="achievements-grid" id="achievements-grid"></div>
+        </section>
+    </main>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- ================================ -->
+    <!-- FLOATING PROFILE & RIGHT SIDEBAR -->
+    <!-- ================================ -->
+    <button id="floating-profile-btn" class="floating-profile-btn" onclick="toggleProfileSidebar()">
+        <span id="floating-avatar">P</span>
+    </button>
+
+    <div class="profile-overlay" id="profile-overlay" onclick="toggleProfileSidebar()"></div>
+
+    <aside id="profile-sidebar" class="profile-sidebar">
+        <div class="profile-sidebar-header">
+            <h2>👤 Profile Ku</h2>
+            <button class="btn-close-profile" onclick="toggleProfileSidebar()">✕</button>
+        </div>
+        <div class="profile-sidebar-content">
+            <div class="profile-header-info">
+                <div class="profile-avatar-large" id="profile-avatar-large" onclick="document.getElementById('profile-upload').click()" title="Ubah Foto Profil">P</div>
+                <div class="profile-text-wrap">
+                    <h2 class="profile-name" id="profile-name">Pengguna</h2>
+                    <p class="profile-join-date" id="profile-join-date-txt">Bergabung sejak: -</p>
+                    <button class="btn btn-outline btn-sm" onclick="editProfileName()">✏️ Edit Nama</button>
+                </div>
+            </div>
+            
+            <input type="file" id="profile-upload" accept="image/*" style="display:none;" onchange="handleProfileUpload(event)">
+            
+            <h3 class="section-title" style="margin-top:24px; font-size:1.1rem;">Statistik Belajar</h3>
+            <div class="profile-stats-grid">
+                <div class="p-stat-box">
+                    <span class="p-stat-icon">🌟</span>
+                    <div class="p-stat-content">
+                        <span class="p-stat-value" id="profile-level">1</span>
+                        <span class="p-stat-label">Level Aktif</span>
+                    </div>
+                </div>
+                <div class="p-stat-box">
+                    <span class="p-stat-icon">⚡</span>
+                    <div class="p-stat-content">
+                        <span class="p-stat-value" id="profile-xp">0</span>
+                        <span class="p-stat-label">Total XP</span>
+                    </div>
+                </div>
+                <div class="p-stat-box">
+                    <span class="p-stat-icon">🔥</span>
+                    <div class="p-stat-content">
+                        <span class="p-stat-value" id="profile-streak-val">0</span>
+                        <span class="p-stat-label">Hari Streak</span>
+                    </div>
+                </div>
+                <div class="p-stat-box">
+                    <span class="p-stat-icon">🏆</span>
+                    <div class="p-stat-content">
+                        <span class="p-stat-value" id="profile-achievements-val">0</span>
+                        <span class="p-stat-label">Achievements</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <hr class="profile-divider">
+                <h3 class="section-title" style="font-size:1.1rem; margin-bottom:16px;">Pengaturan Akun</h3>
+                <div class="profile-btn-group">
+                    <button class="btn btn-danger" onclick="resetProgress()" style="width:100%; background:rgba(248,113,113,0.15); color:#f87171; border:1px solid #f87171; border-radius:8px;">⚠️ Reset Progress Keseluruhan</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script src="courses_data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

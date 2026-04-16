@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ZeroCode - Platform pembelajaran interaktif gratis untuk belajar programming dari nol.">
+    <title>ZeroCode — Belajar Programming dari Nol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #07080d;
+            --bg2: #0e1019;
+            --card: #141622;
+            --text: #e8eaf0;
+            --text2: #8b8fa8;
+            --muted: #4a4e65;
+            --accent: #7c5cfc;
+            --accent-s: rgba(124,92,252,0.12);
+            --border: rgba(255,255,255,0.06);
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            font-family:'Inter',-apple-system,sans-serif;
+            background:var(--bg);color:var(--text);
+            min-height:100vh;overflow-x:hidden;line-height:1.6;
+        }
+        ::selection{background:var(--accent);color:#fff}
+
+        /* ====== PARTICLE CANVAS ====== */
+        #particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+        /* ====== NAVBAR ====== */
+        .nav{
+            position:fixed;top:0;left:0;right:0;z-index:100;
+            height:60px;padding:0 28px;
+            display:flex;align-items:center;justify-content:space-between;
+            background:rgba(7,8,13,0.75);
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--border);
+        }
+        .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .nav-logo-icon{
+            font-size:1.35rem;font-weight:800;color:var(--accent);
+            font-family:'JetBrains Mono',monospace;
+        }
+        .nav-logo-text{
+            font-size:1.15rem;font-weight:800;
+            background:linear-gradient(135deg,var(--accent),#a78bfa);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        .nav-pill{
+            padding:4px 14px;background:var(--accent-s);color:var(--accent);
+            border-radius:999px;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;
+            border:1px solid rgba(124,92,252,0.15);white-space:nowrap;
+        }
+
+        /* ====== HERO ====== */
+        .hero{
+            position:relative;z-index:1;
+            min-height:100vh;display:flex;align-items:center;justify-content:center;
+            padding:100px 24px 60px;
+        }
+        .hero-inner{max-width:760px;text-align:center}
+
+        .badge{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:7px 18px;background:var(--accent-s);color:var(--accent);
+            border-radius:999px;font-weight:700;font-size:0.82rem;
+            border:1px solid rgba(124,92,252,0.2);
+            animation:fadeUp .6s ease;margin-bottom:28px;
+        }
+        .badge .dot{
+            width:7px;height:7px;background:var(--accent);border-radius:50%;
+            animation:pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse{
+            0%,100%{opacity:1;transform:scale(1)}
+            50%{opacity:.4;transform:scale(1.5)}
+        }
+
+        .hero h1{
+            font-size:clamp(2.5rem,7vw,4rem);font-weight:900;
+            line-height:1.08;letter-spacing:-.04em;margin-bottom:24px;
+            animation:fadeUp .7s ease .1s both;
+        }
+        .hero h1 .w{
+            display:block;
+            background:linear-gradient(135deg,#fff,#c0c4d4);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+        .hero h1 .g{
+            display:block;
+            background:linear-gradient(135deg,var(--accent),#a78bfa 50%,#f0db4f);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        }
+
+        .hero-desc{
+            font-size:1.08rem;color:var(--text2);line-height:1.75;
+            max-width:580px;margin:0 auto 36px;
+            animation:fadeUp .7s ease .2s both;
+        }
+        .hero-desc strong{color:var(--text);font-weight:600}
+
+        .tags{
+            display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+            margin-bottom:44px;animation:fadeUp .7s ease .3s both;
+        }
+        .tag{
+            display:inline-flex;align-items:center;gap:6px;
+            padding:7px 16px;background:var(--card);
+            border:1px solid var(--border);border-radius:999px;
+            font-size:.82rem;font-weight:500;color:var(--text2);
+            transition:all .25s ease;cursor:default;
+        }
+        .tag:hover{
+            border-color:var(--accent);color:var(--accent);
+            background:var(--accent-s);transform:translateY(-2px);
+        }
+
+        .cta-wrap{animation:fadeUp .7s ease .4s both;margin-bottom:48px}
+        .cta{
+            display:inline-flex;align-items:center;gap:10px;
+            padding:17px 48px;font-size:1.1rem;font-weight:700;
+            font-family:'Inter',sans-serif;color:#fff;
+            background:linear-gradient(135deg,var(--accent),#9b7cfc);
+            border:none;border-radius:14px;cursor:pointer;
+            transition:all .3s ease;
+            box-shadow:0 6px 28px rgba(124,92,252,.3);
+            position:relative;overflow:hidden;
+        }
+        .cta::after{
+            content:'';position:absolute;top:0;left:-100%;
+            width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+            transition:left .5s ease;
+        }
+        .cta:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(124,92,252,.45)}
+        .cta:hover::after{left:100%}
+        .cta:active{transform:translateY(0)}
+        .cta .arr{transition:transform .25s ease;font-size:1.2rem}
+        .cta:hover .arr{transform:translateX(4px)}
+
+        .stats-row{
+            display:flex;justify-content:center;gap:48px;
+            animation:fadeUp .7s ease .55s both;
+        }
+        .stat-item{text-align:center}
+        .stat-num{font-size:1.6rem;font-weight:800;color:#fff;display:block}
+        .stat-lbl{font-size:.72rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+
+        /* ====== NAME OVERLAY ====== */
+        .name-ov{
+            position:fixed;inset:0;z-index:1000;
+            display:flex;align-items:center;justify-content:center;
+            opacity:0;visibility:hidden;transition:all .4s ease;
+        }
+        .name-ov.show{opacity:1;visibility:visible}
+        .name-ov-bg{
+            position:absolute;inset:0;
+            background:rgba(6,7,10,.88);
+            backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+        }
+        .name-card{
+            position:relative;z-index:10;width:90%;max-width:440px;
+            background:#14162a;border:1px solid rgba(255,255,255,.1);
+            border-radius:22px;padding:44px 36px 36px;
+            box-shadow:0 32px 80px rgba(0,0,0,.6);
+            transform:translateY(30px) scale(.96);
+            transition:all .45s cubic-bezier(.34,1.56,.64,1);
+        }
+        .name-ov.show .name-card{transform:translateY(0) scale(1)}
+        .nc-hdr{text-align:center;margin-bottom:28px}
+        .nc-emoji{font-size:2.8rem;display:block;margin-bottom:14px;animation:wave 2.5s ease-in-out infinite}
+        @keyframes wave{
+            0%,60%,100%{transform:rotate(0)}
+            10%{transform:rotate(14deg)}20%{transform:rotate(-8deg)}
+            30%{transform:rotate(14deg)}40%{transform:rotate(-4deg)}50%{transform:rotate(10deg)}
+        }
+        .nc-title{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+        .nc-desc{color:var(--text2);font-size:.88rem;line-height:1.5}
+        .nc-form{display:flex;flex-direction:column;gap:16px}
+        .nc-input{
+            display:block;width:100%;padding:16px 20px;
+            background:var(--bg);border:2px solid var(--border);
+            border-radius:8px;color:var(--text);
+            font-family:'Inter',sans-serif;font-size:1rem;
+            outline:none;transition:all .25s ease;
+            -webkit-appearance:none;appearance:none;
+        }
+        .nc-input::placeholder{color:var(--muted)}
+        .nc-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-s)}
+        .nc-submit{
+            display:flex;align-items:center;justify-content:center;gap:8px;
+            width:100%;padding:16px 24px;font-size:1rem;font-weight:700;
+            font-family:'Inter',sans-serif;color:#fff;
+            background:linear-gradient(135deg,var(--accent),#9b7cfc);
+            border:none;border-radius:8px;cursor:pointer;
+            transition:all .25s ease;box-shadow:0 4px 16px rgba(124,92,252,.25);
+        }
+        .nc-submit:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,92,252,.4)}
+        .nc-submit:active{transform:translateY(0)}
+        .nc-back{
+            display:block;width:100%;text-align:center;margin-top:8px;
+            color:var(--muted);font-size:.82rem;font-family:'Inter',sans-serif;
+            cursor:pointer;border:none;background:none;padding:6px;
+            transition:color .2s ease;
+        }
+        .nc-back:hover{color:var(--text2)}
+
+        .foot{
+            text-align:center;padding:20px 24px;color:var(--muted);font-size:.78rem;
+            border-top:1px solid var(--border);position:relative;z-index:1;
+        }
+
+        @keyframes fadeUp{
+            from{opacity:0;transform:translateY(24px)}
+            to{opacity:1;transform:translateY(0)}
+        }
+
+        @media(max-width:768px){
+            .nav{padding:0 16px;height:54px}
+            .hero{padding:80px 18px 40px}
+            .hero h1{margin-bottom:20px}
+            .hero-desc{font-size:.95rem;margin-bottom:28px}
+            .tags{gap:8px}.tag{font-size:.75rem;padding:5px 12px}
+            .cta{padding:15px 36px;font-size:1rem}
+            .stats-row{gap:28px}.stat-num{font-size:1.3rem}
+            .name-card{padding:36px 24px 28px}.nc-title{font-size:1.3rem}
+        }
+        @media(max-width:480px){
+            .stats-row{gap:20px}.stat-num{font-size:1.15rem}.stat-lbl{font-size:.68rem}
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div style="position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column">
+
+    <nav class="nav">
+        <a class="nav-logo" href="#">
+            <span class="nav-logo-icon">⟨/⟩</span>
+            <span class="nav-logo-text">ZeroCode</span>
+        </a>
+        <span class="nav-pill">✦ OPEN PLATFORM</span>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="badge"><span class="dot"></span> Platform Belajar Gratis</div>
+            <h1>
+                <span class="w">Selamat Datang di</span>
+                <span class="g">ZeroCode</span>
+            </h1>
+            <p class="hero-desc">
+                Platform pembelajaran programming interaktif yang dirancang khusus untuk pemula.
+                Kuasai <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong>, dan <strong>Python</strong>
+                dengan materi terstruktur, latihan praktek, quiz seru, dan sistem gamifikasi
+                yang membuat belajar coding jadi menyenangkan!
+            </p>
+            <div class="tags">
+                <span class="tag"><span>📖</span> Materi Terstruktur</span>
+                <span class="tag"><span>💻</span> Live Code Editor</span>
+                <span class="tag"><span>🧠</span> Quiz Interaktif</span>
+                <span class="tag"><span>🏆</span> Achievements & XP</span>
+                <span class="tag"><span>🔥</span> Streak System</span>
+            </div>
+            <div class="cta-wrap">
+                <button class="cta" onclick="openNameForm()">
+                    Belajar Sekarang <span class="arr">→</span>
+                </button>
+            </div>
+            <div class="stats-row">
+                <div class="stat-item"><span class="stat-num">4</span><span class="stat-lbl">Bahasa</span></div>
+                <div class="stat-item"><span class="stat-num">24+</span><span class="stat-lbl">Pelajaran</span></div>
+                <div class="stat-item"><span class="stat-num">100%</span><span class="stat-lbl">Gratis</span></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="foot">&copy; 2026 ZeroCode. Dibuat dengan ❤️ untuk semua yang ingin belajar coding.</footer>
+</div>
+
+<!-- NAME OVERLAY -->
+<div class="name-ov" id="name-ov">
+    <div class="name-ov-bg" onclick="closeNameForm()"></div>
+    <div class="name-card">
+        <div class="nc-hdr">
+            <span class="nc-emoji">👋</span>
+            <h2 class="nc-title">Siapa Namamu?</h2>
+            <p class="nc-desc">Masukkan nama panggilanmu agar pengalaman belajar lebih personal dan seru!</p>
+        </div>
+        <form class="nc-form" id="name-form" onsubmit="submitName(event)">
+            <input type="text" class="nc-input" id="name-input" placeholder="Ketik nama panggilanmu..." required autocomplete="off" maxlength="30">
+            <button type="submit" class="nc-submit">🚀 Mulai Petualangan Coding!</button>
+        </form>
+        <button class="nc-back" onclick="closeNameForm()">← Kembali</button>
+    </div>
+</div>
+
+<script>
+// ====== PARTICLE SYSTEM ======
+(function(){
+    const c = document.getElementById('particles');
+    const ctx = c.getContext('2d');
+    let w, h, particles = [], mouse = {x:null, y:null};
+
+    function resize(){
+        w = c.width = window.innerWidth;
+        h = c.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    window.addEventListener('mousemove', e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    const COUNT = Math.min(80, Math.floor(window.innerWidth / 18));
+    const COLORS = ['rgba(124,92,252,','rgba(167,139,250,','rgba(99,102,241,','rgba(240,219,79,'];
+
+    for(let i=0; i<COUNT; i++){
+        particles.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            r: Math.random()*2 + 0.5,
+            vx: (Math.random()-.5)*.4,
+            vy: (Math.random()-.5)*.4,
+            col: COLORS[Math.floor(Math.random()*COLORS.length)],
+            alpha: Math.random()*.5 + .1
+        });
+    }
+
+    function draw(){
+        ctx.clearRect(0,0,w,h);
+
+        for(let i=0; i<particles.length; i++){
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if(p.x < 0) p.x = w;
+            if(p.x > w) p.x = 0;
+            if(p.y < 0) p.y = h;
+            if(p.y > h) p.y = 0;
+
+            // Mouse interaction
+            if(mouse.x !== null){
+                const dx = mouse.x - p.x;
+                const dy = mouse.y - p.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 150){
+                    p.x -= dx * 0.008;
+                    p.y -= dy * 0.008;
+                }
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.fillStyle = p.col + p.alpha + ')';
+            ctx.fill();
+
+            // Connect nearby
+            for(let j=i+1; j<particles.length; j++){
+                const p2 = particles[j];
+                const dx = p.x - p2.x;
+                const dy = p.y - p2.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 120){
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = 'rgba(124,92,252,' + (1 - dist/120) * 0.12 + ')';
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+// ====== NAME FORM ======
+function openNameForm(){
+    document.getElementById('name-ov').classList.add('show');
+    setTimeout(()=>document.getElementById('name-input').focus(),450);
+}
+function closeNameForm(){
+    document.getElementById('name-ov').classList.remove('show');
+}
+function submitName(e){
+    e.preventDefault();
+    const name = document.getElementById('name-input').value.trim();
+    if(!name) return;
+    localStorage.setItem('zerocode-username', name);
+    const card = document.querySelector('.name-card');
+    card.style.transform='translateY(-16px) scale(1.01)';
+    card.style.opacity='0';
+    card.style.transition='all .35s ease';
+    setTimeout(()=>{window.location.href='index.html'},350);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNameForm()});
+window.addEventListener('DOMContentLoaded',()=>{
+    if(localStorage.getItem('zerocode-username')) window.location.href='index.html';
+});
+</script>
+</body>
+</html>
