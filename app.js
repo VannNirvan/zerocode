@@ -450,6 +450,11 @@ function renderLessons(courseKey) {
             if (allPrevDone && !bossCompleted) {
                 bossItem.addEventListener('click', () => startBossBattle(courseKey, bp.idx));
                 bossItem.style.cursor = 'pointer';
+            } else if (!allPrevDone) {
+                bossItem.addEventListener('click', () => {
+                    alert('Lengkapi semua materi sebelumnya untuk membuka tantangan Boss ini! ⚔️');
+                });
+                bossItem.style.cursor = 'help';
             }
             container.appendChild(bossItem);
         }
@@ -474,6 +479,37 @@ function renderLessons(courseKey) {
         }
         container.appendChild(item);
     });
+
+    // Final check for boss after all lessons (triggerAfter === course.lessons.length)
+    const finalIndex = course.lessons.length;
+    if (bossPositions[finalIndex]) {
+        const bp = bossPositions[finalIndex];
+        const bossKey = `boss-${courseKey}-${bp.idx}`;
+        const bossCompleted = state.completedLessonIds.includes(bossKey);
+        const allPrevDone = course.lessons.every(l => state.completedLessonIds.includes(l.id));
+        
+        const bossItem = document.createElement('div');
+        bossItem.className = `lesson-item boss-item${bossCompleted ? ' completed' : ''}${!allPrevDone ? ' locked' : ''}`;
+        bossItem.innerHTML = `
+            <div class="lesson-number">${bossCompleted ? '✓' : '⚔️'}</div>
+            <div class="lesson-meta">
+                <h3>${bp.boss.name}</h3>
+                <p>${bossCompleted ? 'Boss sudah dikalahkan!' : 'Ujian Akhir Course — Kalahkan untuk lulus!'}</p>
+            </div>
+            <div class="lesson-status">${bossCompleted ? '✅' : allPrevDone ? '⚔️' : '🔒'}</div>
+        `;
+        
+        if (allPrevDone && !bossCompleted) {
+            bossItem.addEventListener('click', () => startBossBattle(courseKey, bp.idx));
+            bossItem.style.cursor = 'pointer';
+        } else if (!allPrevDone) {
+            bossItem.addEventListener('click', () => {
+                alert('Tuntaskan seluruh materi di course ini untuk menghadapi Boss Terakhir! 🏆');
+            });
+            bossItem.style.cursor = 'help';
+        }
+        container.appendChild(bossItem);
+    }
 }
 
 function openLesson(courseKey, lesson) {

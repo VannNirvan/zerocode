@@ -2127,7 +2127,8 @@ body {
     font-size: 0.82rem;
     line-height: 1.6;
     overflow-y: auto;
-    background: var(--bg-primary);
+    background: #0f1117 !important; /* Force Dark Background */
+    color: #e8eaf0 !important;      /* Force Light Text */
 }
 
 .console-line {
@@ -2136,16 +2137,28 @@ body {
     word-break: break-all;
 }
 
-.console-line.log { color: var(--text-secondary); }
-.console-line.output { color: var(--text-primary); }
-.console-line.error { color: var(--accent-error); }
-.console-line.success { color: var(--accent-success); }
-.console-line.info { color: var(--accent-css); }
-.console-line.warn { color: var(--accent-warning); }
+.console-line.log { color: #e8eaf0; }
+.console-line.output { color: #ffffff; }
+.console-line.error { color: #f87171; }
+.console-line.success { color: #34d399; }
+.console-line.info { color: #60a5fa; }
+.console-line.warn { color: #fbbf24; }
 .console-line.comment {
-    color: var(--text-muted);
+    color: #6b7280;
     font-style: italic;
 }
+
+/* Fix for hardcoded light colors in courses data for light theme */
+[data-theme="light"] [style*="color: #a7f3d0"] {
+    color: #065f46 !important; /* Much darker green for light mode */
+}
+[data-theme="light"] [style*="color: #a78bfa"] {
+    color: #6d28d9 !important; /* Much darker purple for light mode */
+}
+[data-theme="light"] .materi-example {
+    background: rgba(0, 0, 0, 0.04) !important;
+}
+
 
 .console-line::before {
     content: '> ';
